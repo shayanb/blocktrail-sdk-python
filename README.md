@@ -11,9 +11,10 @@ at https://www.blocktrail.com/api/docs/lang/python
 [![Latest Stable Version](https://badge.fury.io/py/blocktrail-sdk.svg)](https://pypi.python.org/pypi/blocktrail-sdk)
 [![Build Status](https://travis-ci.org/blocktrail/blocktrail-sdk-python.png?branch=master)](https://travis-ci.org/blocktrail/blocktrail-sdk-python)
 
-NOTICE
+NOTICE!
 -------
 This is a quick port of Blocktrail Python SDK for [Google App Engine](https://cloud.google.com/appengine/docs)
+All the non-compatible dependencies were removed.
 
 
 IMPORTANT! FLOATS ARE EVIL!!
@@ -54,22 +55,13 @@ $ apt-get install python-dev
 Python Versions
 ---------------
 Python 2.7 is thoroughly tested.
-Python 3.2 is not supported by the `future` library, so atm we don't support it either.
-Python 3.3 and 3.4 unit tests pass, but it needs some testing...
 
 Dependancies
 ------------
 The following dependancies are required / installed:
 
-~~ - httpsig (for signing our requests to the API)~~
-
  - pycrypto (for crypto stuff)
  
-~~ - requests (for doing the requests to the API)~~
-
-~~ - future (for supporting both python 2 and 3)~~
-
-~~ - six (for supporting both python 2 and 3)~~
 
 Usage
 -----
