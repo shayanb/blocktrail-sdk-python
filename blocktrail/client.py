@@ -1,5 +1,5 @@
 from blocktrail import connection
-
+import json
 
 class APIClient(object):
     def __init__(self, api_key, api_secret, network='BTC', testnet=False, api_version='v1', api_endpoint=None, debug=False):
@@ -29,7 +29,7 @@ class APIClient(object):
         """
         response = self.client.get("/address/%s" % (address, ))
 
-        return response.json()
+        return json.loads(response)
 
     def address_transactions(self, address, page=1, limit=20, sort_dir='asc'):
         """
@@ -44,7 +44,7 @@ class APIClient(object):
 
         response = self.client.get("/address/%s/transactions" % (address, ), params={'page': page, 'limit': limit, 'sort_dir': sort_dir})
 
-        return response.json()
+        return json.loads(response)
 
     def address_unconfirmed_transactions(self, address, page=1, limit=20, sort_dir='asc'):
         """
@@ -58,9 +58,9 @@ class APIClient(object):
         """
         response = self.client.get("/address/%s/unconfirmed-transactions" % (address, ), params={'page': page, 'limit': limit, 'sort_dir': sort_dir})
 
-        return response.json()
+        return json.loads(response)
 
-    def address_unspent_outputs(self, address, page=1, limit=20, sort_dir='asc'):
+    def address_unspent_outputs(self, address, page=1, limit=50, sort_dir='asc'):
         """
         get all inspent outputs for an address (paginated)
 
@@ -72,7 +72,7 @@ class APIClient(object):
         """
         response = self.client.get("/address/%s/unspent-outputs" % (address, ), params={'page': page, 'limit': limit, 'sort_dir': sort_dir})
 
-        return response.json()
+        return json.loads(response)
 
     def verify_address(self, address, signature):
         """
@@ -84,7 +84,7 @@ class APIClient(object):
         """
         response = self.client.post("/address/%s/verify" % (address, ), data={'signature': signature}, auth=True)
 
-        return response.json()
+        return json.loads(response)
 
     def all_blocks(self, page=1, limit=20, sort_dir='asc'):
         """
@@ -98,7 +98,7 @@ class APIClient(object):
 
         response = self.client.get("/all-blocks", params={'page': page, 'limit': limit, 'sort_dir': sort_dir})
 
-        return response.json()
+        return json.loads(response)
 
     def block_latest(self):
         """
@@ -108,7 +108,7 @@ class APIClient(object):
         """
         response = self.client.get("/block/latest")
 
-        return response.json()
+        return json.loads(response)
 
     def block(self, block):
         """
@@ -120,7 +120,7 @@ class APIClient(object):
 
         response = self.client.get("/block/%s" % (block, ))
 
-        return response.json()
+        return json.loads(response)
 
     def block_transactions(self, block, page=1, limit=20, sort_dir='asc'):
         """
@@ -135,7 +135,7 @@ class APIClient(object):
 
         response = self.client.get("/block/%s/transactions" % (block, ), params={'page': page, 'limit': limit, 'sort_dir': sort_dir})
 
-        return response.json()
+        return json.loads(response)
 
     def transaction(self, txhash):
         """
@@ -147,7 +147,7 @@ class APIClient(object):
 
         response = self.client.get("/transaction/%s" % (txhash, ))
 
-        return response.json()
+        return json.loads(response)
 
     def all_webhooks(self, page=1, limit=20):
         """
@@ -160,7 +160,7 @@ class APIClient(object):
 
         response = self.client.get("/webhooks", params={'page': page, 'limit': limit})
 
-        return response.json()
+        return json.loads(response)
 
     def webhook(self, identifier):
         """
@@ -172,7 +172,7 @@ class APIClient(object):
 
         response = self.client.get("/webhook/%s" % (identifier, ))
 
-        return response.json()
+        return json.loads(response)
 
     def setup_webhook(self, url, identifier=None):
         """
@@ -184,7 +184,7 @@ class APIClient(object):
         """
         response = self.client.post("/webhook", data={'url': url, 'identifier': identifier}, auth=True)
 
-        return response.json()
+        return json.loads(response)
 
     def update_webhook(self, identifier, new_url=None, new_identifier=None):
         """
@@ -199,7 +199,7 @@ class APIClient(object):
                                    data={'url': new_url, 'identifier': new_identifier},
                                    auth=True)
 
-        return response.json()
+        return json.loads(response)
 
     def delete_webhook(self, identifier):
         """
@@ -210,7 +210,7 @@ class APIClient(object):
         """
         response = self.client.delete("/webhook/%s" % (identifier, ), auth=True)
 
-        return response.json()
+        return json.loads(response)
 
     def webhook_events(self, identifier, page=1, limit=20):
         """
@@ -224,7 +224,7 @@ class APIClient(object):
 
         response = self.client.get("/webhook/%s/events" % (identifier, ), params={'page': page, 'limit': limit})
 
-        return response.json()
+        return json.loads(response)
 
     def subscribe_address_transactions(self, identifier, address, confirmations=6):
         """
@@ -245,7 +245,7 @@ class APIClient(object):
             auth=True
         )
 
-        return response.json()
+        return json.loads(response)
 
     def batch_subscribe_address_transactions(self, identifier, batch_data):
         """
@@ -260,7 +260,7 @@ class APIClient(object):
 
         response = self.client.post("/webhook/%s/events/batch" % (identifier, ), data=batch_data, auth=True)
 
-        return response.json()
+        return json.loads(response)
 
     def subscribe_new_blocks(self, identifier):
         """
@@ -277,7 +277,7 @@ class APIClient(object):
             auth=True
         )
 
-        return response.json()
+        return json.loads(response)
 
     def subscribe_transaction(self, identifier, transaction, confirmations=6):
         """
@@ -298,7 +298,7 @@ class APIClient(object):
             auth=True
         )
 
-        return response.json()
+        return json.loads(response)
 
     def unsubscribe_address_transactions(self, identifier, address):
         """
@@ -310,7 +310,7 @@ class APIClient(object):
         """
         response = self.client.delete("/webhook/%s/address-transactions/%s" % (identifier, address), auth=True)
 
-        return response.json()
+        return json.loads(response)
 
     def unsubscribe_new_blocks(self, identifier):
         """
@@ -321,7 +321,7 @@ class APIClient(object):
         """
         response = self.client.delete("/webhook/%s/block" % (identifier, ), auth=True)
 
-        return response.json()
+        return json.loads(response)
 
     def unsubscribe_transaction(self, identifier, transaction):
         """
@@ -333,7 +333,7 @@ class APIClient(object):
         """
         response = self.client.delete("/webhook/%s/transaction/%s" % (identifier, transaction), auth=True)
 
-        return response.json()
+        return json.loads(response)
 
     def price(self):
         """
@@ -344,7 +344,7 @@ class APIClient(object):
 
         response = self.client.get("/price")
 
-        return response.json()
+        return json.loads(response)
 
     def verify_message(self, message, address, signature):
         """
@@ -362,4 +362,4 @@ class APIClient(object):
             signature=signature
         ))
 
-        return response.json()['result']
+        return json.loads(response)['result']

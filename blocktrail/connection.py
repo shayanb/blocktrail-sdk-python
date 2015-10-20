@@ -1,18 +1,16 @@
-from __future__ import print_function
-from future.standard_library import install_aliases
-install_aliases()
 
 import datetime
-from urllib.parse import urlparse, urlencode
-import requests
 import json
 import hashlib
 
-from httpsig.requests_auth import HTTPSignatureAuth
-from requests.models import RequestEncodingMixin
+from .httpsig import Signer
+from urlparse import urlparse
 
 import blocktrail
 from blocktrail.exceptions import *
+from urllib import urlencode
+import logging
+from google.appengine.api import urlfetch
 
 
 EXCEPTION_INVALID_CREDENTIALS = "Your credentials are incorrect."
@@ -25,7 +23,7 @@ EXCEPTION_OBJECT_NOT_FOUND = "The object you've tried to access does not exist."
 
 
 class RestClient(object):
-    def __init__(self, api_endpoint, api_key, api_secret, debug=False):
+    def __init__(self, api_endpoint, api_key , api_secret , debug=False):
         """
         :param str      api_endpoint:   the base url to use for all API requests
         :param str      api_key:        the API_KEY to use for authentication
@@ -46,8 +44,9 @@ class RestClient(object):
         }
 
         # prepare HTTP-Signature Auth signer
-        self.auth = HTTPSignatureAuth(key_id=api_key, secret=api_secret, algorithm='hmac-sha256',
-                                      headers=['(request-target)', 'Date', 'Content-MD5'])
+        #self.auth = Signer(key_id=api_key, secret=api_secret, algorithm='hmac-sha256',
+         #                             headers=['(request-target)', 'Date', 'Content-MD5'])
+        self.auth = None
 
     def get(self, endpoint_url, params=None, auth=None):
         """
@@ -66,8 +65,16 @@ class RestClient(object):
 
         params = dict_merge(self.default_params, params)
 
-        response = requests.get(self.api_endpoint + endpoint_url, params=params, headers=headers, auth=auth)
+        get_params = ""
+        for key, value in params.iteritems():
+            get_params += "%s=%s&" % (key,value)
 
+        if get_params[-1] == "&":
+            get_params = get_params[0:-1]
+
+        headers = Signer(headers = headers)
+
+        response = urlfetch.fetch((self.api_endpoint + endpoint_url+ "?%s" %get_params), headers=headers)
         return self.handle_response(response)
 
     def post(self, endpoint_url, data, params=None, auth=None):
@@ -90,7 +97,17 @@ class RestClient(object):
         })
 
         params = dict_merge(self.default_params, params)
-        response = requests.post(self.api_endpoint + endpoint_url, data=data, params=params, headers=headers, auth=auth)
+
+        headers = Signer(payload = data,headers = headers)
+
+        get_params = ""
+        for key, value in params.iteritems():
+            get_params = "%s=%s&" % (key,value)
+
+        if get_params[-1] == "&":
+            get_params = get_params[0:-1]
+
+        response = urlfetch.fetch((self.api_endpoint + endpoint_url+ "?%s" %get_params), payload=data, method=urlfetch.POST, headers=headers)
 
         return self.handle_response(response)
 
@@ -113,8 +130,18 @@ class RestClient(object):
             'Content-Type': 'application/json'
         })
 
+        headers = Signer(payload = data,headers = headers)
+
         params = dict_merge(self.default_params, params)
-        response = requests.put(self.api_endpoint + endpoint_url, data=data, params=params, headers=headers, auth=auth)
+
+        get_params = ""
+        for key, value in params.iteritems():
+            get_params = "%s=%s&" % (key,value)
+
+        if get_params[-1] == "&":
+            get_params = get_params[0:-1]
+
+        response = urlfetch.fetch((self.api_endpoint + endpoint_url+ "?%s" %get_params), payload=data, method=urlfetch.PUT, headers=headers)
 
         return self.handle_response(response)
 
@@ -137,9 +164,16 @@ class RestClient(object):
             'Content-MD5': RestClient.content_md5(urlparse(self.api_endpoint + endpoint_url).path + "?" + urlencode(params)),
             'Content-Type': 'application/json'
         })
+        headers = Signer(payload = data,headers = headers)
 
-        response = requests.delete(self.api_endpoint + endpoint_url, data=data, params=params, headers=headers, auth=auth)
+        get_params = ""
+        for key, value in params.iteritems():
+            get_params = "%s=%s&" % (key,value)
 
+        if get_params[-1] == "&":
+            get_params = get_params[0:-1]
+
+        response = urlfetch.fetch((self.api_endpoint + endpoint_url+ "?%s" %get_params), payload=data, method=urlfetch.DELETE, headers=headers)
         return self.handle_response(response)
 
     def handle_response(self, response):
@@ -153,12 +187,12 @@ class RestClient(object):
             if len(response.content) == 0:
                 raise EmptyResponse(EXCEPTION_EMPTY_RESPONSE)
 
-            return response
+            return response.content
         elif self.debug:
             print(response.url, response.status_code, response.content)
 
         if response.status_code == 400 or response.status_code == 403:
-            data = response.json()
+            data = json.loads(response.content)
 
             if data and data['msg'] and data['code']:
                 raise EndpointSpecificError(msg=data['msg'], code=data['code'])

@@ -1,3 +1,7 @@
+
+
+
+
 BlockTrail Python SDK
 =====================
 This is the BlockTrail Python SDK. This SDK contains methods for easily interacting with the BlockTrail API.
@@ -6,6 +10,11 @@ at https://www.blocktrail.com/api/docs/lang/python
 
 [![Latest Stable Version](https://badge.fury.io/py/blocktrail-sdk.svg)](https://pypi.python.org/pypi/blocktrail-sdk)
 [![Build Status](https://travis-ci.org/blocktrail/blocktrail-sdk-python.png?branch=master)](https://travis-ci.org/blocktrail/blocktrail-sdk-python)
+
+NOTICE
+-------
+This is a quick port of Blocktrail Python SDK for [Google App Engine](https://cloud.google.com/appengine/docs)
+
 
 IMPORTANT! FLOATS ARE EVIL!!
 ----------------------------
@@ -24,7 +33,7 @@ print "1.23456789 BTC to Satoshi: ", blocktrail.to_satoshi(1.23456789)
 
 A bit more about this can be found [in our documentation](https://www.blocktrail.com/api/docs/lang/python#api_coin_format).
 
-Installation
+~~Installation~~
 ------------
 You can install the package through Pypi (https://pypi.python.org/pypi/blocktrail-sdk).
 ```
@@ -51,11 +60,11 @@ Python 3.3 and 3.4 unit tests pass, but it needs some testing...
 Dependancies
 ------------
 The following dependancies are required / installed:
- - httpsig (for signing our requests to the API)
+~~ - httpsig (for signing our requests to the API)~~
  - pycrypto (for crypto stuff)
- - requests (for doing the requests to the API)
- - future (for supporting both python 2 and 3)
- - six (for supporting both python 2 and 3)
+~~ - requests (for doing the requests to the API)~~
+~~ - future (for supporting both python 2 and 3)~~
+~~ - six (for supporting both python 2 and 3)~~
 
 Usage
 -----
