@@ -60,10 +60,15 @@ Python 3.3 and 3.4 unit tests pass, but it needs some testing...
 Dependancies
 ------------
 The following dependancies are required / installed:
+
 ~~ - httpsig (for signing our requests to the API)~~
+
  - pycrypto (for crypto stuff)
+ 
 ~~ - requests (for doing the requests to the API)~~
+
 ~~ - future (for supporting both python 2 and 3)~~
+
 ~~ - six (for supporting both python 2 and 3)~~
 
 Usage
