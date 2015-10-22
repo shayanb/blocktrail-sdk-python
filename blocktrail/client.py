@@ -1,4 +1,4 @@
-from blocktrail import connection
+import connection
 import json
 
 class APIClient(object):
@@ -145,7 +145,7 @@ class APIClient(object):
         :rtype: dict
         """
 
-        response = self.client.get("/transaction/%s" % (txhash, ))
+        response = self.client.get("/transaction/%s" % (txhash ))
 
         return json.loads(response)
 

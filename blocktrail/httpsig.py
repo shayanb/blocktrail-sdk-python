@@ -1,4 +1,4 @@
-__author__ = 'Shayan Eskandari github.com/shayanb'
+__author__ = 'sbeta'
 
 from time import mktime
 from wsgiref.handlers import format_date_time
@@ -7,7 +7,7 @@ import hmac
 import hashlib
 import base64
 
-def Signer(key_id , secret , algorithm="hmac-sha256", headers= {}):
+def Signer(key_id = 'BLOCKTRAIL_API_KEY', secret = 'BLOCKTRAIL_API_SECRET', algorithm="hmac-sha256", payload={}, headers= {}):
 
     def Signer(data, secret = secret):
         signature = hmac.new(secret, data, hashlib.sha256).digest()
@@ -27,6 +27,7 @@ def Signer(key_id , secret , algorithm="hmac-sha256", headers= {}):
             signable = headers['Date']
 
         signature = Signer(signable)
+        #headers["Authorization"] =
         headers['signature'] = signature
         return headers
 

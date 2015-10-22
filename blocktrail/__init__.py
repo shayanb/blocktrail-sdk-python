@@ -1,4 +1,3 @@
-from __future__ import division
 
 SDK_VERSION = "1.0.2"
 SDK_USER_AGENT = "blocktrail-sdk-python"
@@ -16,6 +15,6 @@ def to_btc(satoshi):
     return COIN_FORMAT % (satoshi / float(COIN))
 
 
-from blocktrail import connection
-from blocktrail import exceptions
-from blocktrail.client import APIClient
+import connection
+import exceptions
+from client import APIClient

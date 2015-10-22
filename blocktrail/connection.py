@@ -1,17 +1,14 @@
-
 import datetime
 import json
 import hashlib
+from urlparse import urlparse
+from urllib import urlencode
 
 from .httpsig import Signer
-from urlparse import urlparse
-
-import blocktrail
-from blocktrail.exceptions import *
-from urllib import urlencode
-import logging
+from .exceptions import *
 from google.appengine.api import urlfetch
-
+from ..blocktrail import SDK_USER_AGENT, SDK_VERSION
+import logging
 
 EXCEPTION_INVALID_CREDENTIALS = "Your credentials are incorrect."
 EXCEPTION_GENERIC_HTTP_ERROR = "An HTTP Error has occurred!"
@@ -23,7 +20,7 @@ EXCEPTION_OBJECT_NOT_FOUND = "The object you've tried to access does not exist."
 
 
 class RestClient(object):
-    def __init__(self, api_endpoint, api_key , api_secret , debug=False):
+    def __init__(self, api_endpoint, api_key = 'BLOCKTRAIL_API_KEY' , api_secret = 'BLOCKTRAIL_API_SECRET', debug=False):
         """
         :param str      api_endpoint:   the base url to use for all API requests
         :param str      api_key:        the API_KEY to use for authentication
@@ -35,7 +32,7 @@ class RestClient(object):
 
         # create a default User-Agent
         self.default_headers = {
-            'User-Agent': "%s/%s" % (blocktrail.SDK_USER_AGENT, blocktrail.SDK_VERSION)
+            'User-Agent': "%s/%s" % (SDK_USER_AGENT, SDK_VERSION)
         }
 
         # api_key is always in the query string
@@ -74,7 +71,7 @@ class RestClient(object):
 
         headers = Signer(headers = headers)
 
-        response = urlfetch.fetch((self.api_endpoint + endpoint_url+ "?%s" %get_params), headers=headers)
+        response = urlfetch.fetch((self.api_endpoint + endpoint_url+ "?%s" %get_params), headers=headers, deadline=10)
         return self.handle_response(response)
 
     def post(self, endpoint_url, data, params=None, auth=None):
@@ -185,11 +182,12 @@ class RestClient(object):
         """
         if response.status_code == 200:
             if len(response.content) == 0:
+                logging.warn(response.url, response.status_code, response.content)
                 raise EmptyResponse(EXCEPTION_EMPTY_RESPONSE)
 
             return response.content
         elif self.debug:
-            print(response.url, response.status_code, response.content)
+            logging.error(response.url, response.status_code, response.content)
 
         if response.status_code == 400 or response.status_code == 403:
             data = json.loads(response.content)
